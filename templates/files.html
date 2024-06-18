@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Files</title>
+</head>
+<body>
+    <h2>Your Files</h2>
+    <ul>
+        {% for file in files %}
+            <li>{{ file.filename }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
