@@ -18,11 +18,6 @@ class File(db.Model):
     def __repr__(self):
         return f"File('{self.filename}')"
 
-# Ensure all database operations occur within the application context
-with app.app_context():
-    # Create all database tables if they do not exist
-    db.create_all()
-
 # Route for uploading files
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -45,4 +40,4 @@ def uploaded_files():
     return render_template('files.html', files=files)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
