@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user, AnonymousUserMixin
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
@@ -31,13 +31,6 @@ class File(db.Model):
     filename = db.Column(db.String(300), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     user = db.relationship('User', backref=db.backref('files', lazy=True))
-
-# Anonymous user class
-class AnonymousUser(AnonymousUserMixin):
-    def __init__(self):
-        self.username = 'Guest'
-
-login_manager.anonymous_user = AnonymousUser
 
 # User loader callback
 @login_manager.user_loader
