@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
@@ -13,3 +14,18 @@
 </form>
 <a href="{{ url_for('register') }}">Create an account</a> | <a href="{{ url_for('upload') }}">Skip login</a>
 {% endblock %}
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+>>>>>>> origin/main
