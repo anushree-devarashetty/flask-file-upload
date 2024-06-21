@@ -108,7 +108,6 @@ def logout():
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
-=======
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
