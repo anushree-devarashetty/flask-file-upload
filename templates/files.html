@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Uploaded Files{% endblock %}
+{% block content %}
+<h2>Uploaded Files</h2>
+<ul>
+    {% for file in files %}
+        <li><a href="{{ url_for('uploaded_file', filename=file.filename) }}">{{ file.filename }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
