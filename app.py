@@ -1,37 +1,50 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 
+# Initialize Flask application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://file_upload_user:k2QjUxbA0x7ZZ4XBZJ3KWUkhPD6hicg4@dpg-cpqt55rv2p9s73dq6uhg-a.oregon-postgres.render.com/file_upload')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 
+# Initialize SQLAlchemy database
 db = SQLAlchemy(app)
 
-class User(db.Model):
+# Initialize Flask-Login
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+# Define User model
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
+# Define File model
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(300), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     user = db.relationship('User', backref=db.backref('files', lazy=True))
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
+# Anonymous user class
 class AnonymousUser(AnonymousUserMixin):
     def __init__(self):
         self.username = 'Guest'
 
 login_manager.anonymous_user = AnonymousUser
+
+# User loader callback
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Routes
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -62,8 +75,10 @@ def login():
     return render_template('login.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
-@login_required
 def upload():
+    if not current_user.is_authenticated:
+        flash('You are uploading files as a guest. Files will not be linked to a user account.')
+    
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
@@ -76,7 +91,8 @@ def upload():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-            new_file = File(filename=filename, user_id=current_user.id)
+            user_id = current_user.id if current_user.is_authenticated else None
+            new_file = File(filename=filename, user_id=user_id)
             db.session.add(new_file)
             db.session.commit()
             flash('File successfully uploaded')
@@ -90,7 +106,6 @@ def files():
     return render_template('files.html', files=user_files)
 
 @app.route('/uploads/<filename>')
-@login_required
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
@@ -100,6 +115,7 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+# Main entry point
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
