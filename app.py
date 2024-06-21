@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from flask import Flask, render_template, redirect, url_for, request, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user, AnonymousUserMixin
@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/app.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://file_upload_user:k2QjUxbA0x7ZZ4XBZJ3KWUkhPD6hicg4@dpg-cpqt55rv2p9s73dq6uhg-a.oregon-postgres.render.com/file_upload')
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 
 db = SQLAlchemy(app)
@@ -152,4 +152,4 @@ def uploaded_files():
 
 if __name__ == '__main__':
     app.run()
->>>>>>> origin/main
+
